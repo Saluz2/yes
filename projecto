@@ -1,0 +1,282 @@
+include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+// Definición de estructuras
+struct pelicula {
+    char nombre[50];
+    char sinopsis[200];
+    char duracion[10];
+    char fecha[10];
+    char sala[10];
+};
+struct boleto {
+    char nombre  [50];
+	char fecha  [20];
+    char hora[10];
+};
+
+struct usuario {
+    char nombre[20];
+    char apellidoPaterno[20];
+    char apellidoMaterno[20];
+    int edad; // Eliminé la inicialización
+    char nickname[20];
+    char contrasena[20];
+    char descripcion[100];
+    char correo[50];
+    char telefono[11];
+    char tarjeta[17];
+};
+
+// Declaraciones globales
+struct usuario usuarios[20];
+int totalUsuarios = 0;
+
+struct pelicula peliculas[100];
+int totalPeliculas = 0;
+
+const int FILAS = 9;
+const int COLUMNAS = 9;
+
+const char adminNickname[] = "elAdministrador";
+const char adminContrasena[] = "3l4dm1n";
+    char nombre[50] = "0";
+    char fecha[20] = "0";
+    char hora[10] = "0";
+// Declaración de funciones
+void menuPrincipal();
+void nuevoRegistro();
+void ingresoSistema();
+void menuAdministrador();
+void menuCliente();
+void darAltaPelicula();
+void registrarNuevoAdmin();
+void verPeliculas();
+void cerrarSesion();
+
+int main() {
+    menuPrincipal();
+    return 0;
+}
+
+void menuPrincipal() {
+    int opcion;
+
+    do {
+        printf("\n --- MENU PRINCIPAL ---\n");
+        printf("1. Nuevo Registro \n");
+        printf("2. Ingreso al Sistema\n");
+        printf("3. Salir \n");
+        printf("Seleccione una opcion: ");
+        scanf("%i", &opcion);
+        getchar();
+
+        switch (opcion) {
+            case 1:
+                nuevoRegistro();
+                break;
+            case 2:
+                ingresoSistema();
+                break;
+            case 3:
+                printf("Saliendo del sistema...\n");
+                break;
+            default:
+                printf("Opcion no valida. Intenta de nuevo.\n");
+        }
+    } while (opcion != 3);
+}
+
+void nuevoRegistro() {
+    if (totalUsuarios >= 20) {
+        printf("No se pueden registrar más usuarios.\n");
+        return;
+    }
+
+    struct usuario nuevoUsuario;
+    printf("\n--- NUEVO REGISTRO ---\n");
+    printf("Nombre(s): ");
+    fgets(nuevoUsuario.nombre, 20, stdin);
+    nuevoUsuario.nombre[strcspn(nuevoUsuario.nombre, "\n")] = '\0';
+    printf("Apellido paterno: ");
+    fgets(nuevoUsuario.apellidoPaterno, 20, stdin);
+    nuevoUsuario.apellidoPaterno[strcspn(nuevoUsuario.apellidoPaterno, "\n")] = '\0';
+    printf("Apellido materno: ");
+    fgets(nuevoUsuario.apellidoMaterno, 20, stdin);
+    nuevoUsuario.apellidoMaterno[strcspn(nuevoUsuario.apellidoMaterno, "\n")] = '\0';
+    printf("Edad: ");
+    scanf("%i", &nuevoUsuario.edad);
+    getchar();
+    printf("Nickname: ");
+    fgets(nuevoUsuario.nickname, 20, stdin);
+    nuevoUsuario.nickname[strcspn(nuevoUsuario.nickname, "\n")] = '\0';
+    printf("Contrasena: ");
+    fgets(nuevoUsuario.contrasena, 20, stdin);
+    nuevoUsuario.contrasena[strcspn(nuevoUsuario.contrasena, "\n")] = '\0';
+    printf("Descripcion: ");
+    fgets(nuevoUsuario.descripcion, 100, stdin);
+    nuevoUsuario.descripcion[strcspn(nuevoUsuario.descripcion, "\n")] = '\0';
+    printf("Correo: ");
+    fgets(nuevoUsuario.correo, 50, stdin);
+    nuevoUsuario.correo[strcspn(nuevoUsuario.correo, "\n")] = '\0';
+    printf("Telefono: ");
+    fgets(nuevoUsuario.telefono, 11, stdin);
+    nuevoUsuario.telefono[strcspn(nuevoUsuario.telefono, "\n")] = '\0';
+    printf("Tarjeta bancaria (16 digitos): ");
+    fgets(nuevoUsuario.tarjeta, 17, stdin);
+    nuevoUsuario.tarjeta[strcspn(nuevoUsuario.tarjeta, "\n")] = '\0';
+
+    usuarios[totalUsuarios] = nuevoUsuario;
+    totalUsuarios++;
+
+    printf("Usuario registrado con exito.\n");
+}
+
+void ingresoSistema() {
+    char nickname[20], contrasena[20];
+    printf("\n--- INGRESO AL SISTEMA ---\n");
+    printf("Nickname: ");
+    fgets(nickname, 20, stdin);
+    nickname[strcspn(nickname, "\n")] = '\0';
+    printf("Contrasena: ");
+    fgets(contrasena, 20, stdin);
+    contrasena[strcspn(contrasena, "\n")] = '\0';
+
+    if (strcmp(nickname, adminNickname) == 0 && strcmp(contrasena, adminContrasena) == 0) {
+        printf("Bienvenido administrador.\n");
+        menuAdministrador();
+        return;
+    }
+
+    for (int i = 0; i < totalUsuarios; i++) {
+        if (strcmp(usuarios[i].nickname, nickname) == 0 && strcmp(usuarios[i].contrasena, contrasena) == 0) {
+            printf("Bienvenido %s.\n", usuarios[i].nombre);
+            menuCliente();
+            return;
+        }
+    }
+
+    printf("Datos incorrectos. Intenta de nuevo.\n");
+}
+
+void menuAdministrador() {
+    int opcion;
+
+    do {
+        printf("\n--- MENU ADMINISTRADOR ---\n");
+        printf("1. Dar de alta una pelicula \n");
+        printf("2. Registrar nueva cuenta de administrador \n");
+        printf("3. Ver peliculas compradas por el usuario \n");
+        printf("4. Cerrar sesion \n");
+        printf("Seleccione una opcion: ");
+        scanf("%i", &opcion);
+        getchar();
+
+        switch (opcion) {
+            case 1:
+                darAltaPelicula();
+                break;
+            case 2:
+                registrarNuevoAdmin();
+                break;
+            case 3:
+                verPeliculas();
+                break;
+            case 4:
+                cerrarSesion();
+                return;
+            default:
+                printf("Opcion no valida. Intenta de nuevo.\n");
+        }
+    } while (opcion != 4);
+}
+
+void darAltaPelicula() {
+    if (totalPeliculas >= 100) {
+        printf("No se pueden registrar más películas.\n");
+        return;
+    }
+
+    struct pelicula nuevaPelicula;
+    printf("\n--- DAR DE ALTA PELICULA ---\n");
+    printf("Nombre de la pelicula: ");
+    fgets(nuevaPelicula.nombre, 50, stdin);
+    nuevaPelicula.nombre[strcspn(nuevaPelicula.nombre, "\n")] = '\0';
+    printf("Sinopsis: ");
+    fgets(nuevaPelicula.sinopsis, 200, stdin);
+    nuevaPelicula.sinopsis[strcspn(nuevaPelicula.sinopsis, "\n")] = '\0';
+    printf("Duracion (hh:mm): ");
+    fgets(nuevaPelicula.duracion, 10, stdin);
+    nuevaPelicula.duracion[strcspn(nuevaPelicula.duracion, "\n")] = '\0';
+    printf("Fecha (dd/mm/aaaa): ");
+    fgets(nuevaPelicula.fecha, 10, stdin);
+    nuevaPelicula.fecha[strcspn(nuevaPelicula.fecha, "\n")] = '\0';
+    printf("Sala (A, B o C): ");
+    fgets(nuevaPelicula.sala, 10, stdin);
+    nuevaPelicula.sala[strcspn(nuevaPelicula.sala, "\n")] = '\0';
+
+    peliculas[totalPeliculas] = nuevaPelicula;
+    totalPeliculas++;
+
+    printf("Pelicula registrada correctamente.\n");
+    printf("Total de peliculas registradas: %d\n", totalPeliculas);
+}
+
+void registrarNuevoAdmin() {
+    nuevoRegistro();
+}
+
+void verPeliculas() {
+    printf("\n--- PELICULAS REGISTRADAS ---\n");
+    for (int i = 0; i < totalPeliculas; i++) {
+        printf("Pelicula %d: %s\n", i + 1, peliculas[i].nombre);
+    }
+}
+
+void cerrarSesion() {
+    printf("Cerrando sesion del administrador...\n");
+}
+
+void menuCliente() {
+    printf("\n--- MENU CLIENTE ---\n");
+    printf("Opciones del cliente pendientes de implementar.\n");
+    struct boleto menucliente;
+    printf("las peliculas son ",nombre);
+    printf("Por favor escriba cual pelicula desea ");
+	scanf("%s",nombre);
+		strcmp(nombre);
+	printf(fecha,hora );
+	printf("\n--- RESUMEN DEL BOLETO ---\n");
+        printf("Película: %s\n", menucliente.nombre);
+        printf("Fecha: %s\n", menucliente.fecha);
+        printf("Hora: %s\n", menucliente.hora);
+
+}
+void inicializarSala() {
+    for (int i = 0; i < FILAS; i++) {
+        for (int j = 0; j < COLUMNAS; j++) {
+            sala[i][j] = 'O'; // O disponible
+            
+			
+			void mostrarSala() {
+    cout << "    ";
+    for (int j = 0; j < COLUMNAS; j++) {
+        cout << setw(3) << j + 1; // Números de columna
+    }
+    cout << endl;
+
+    for (int i = 0; i < FILAS; i++) {
+        cout << " " << char('A' + i) << " "; // Letras de fila
+        for (int j = 0; j < COLUMNAS; j++) {
+            cout << setw(3) << sala[i][j];
+        }
+        cout << endl;
+	
+	void venderAsientos(const vector<string>& asientosSeleccionados) {
+    for (const auto& asiento : asientosSeleccionados) {
+        char fila = asiento[0];
+        int columna = stoi(asiento.substr(1)) - 1;
+
+        int filaIndex = fila - 'A';
+        sala[filaIndex][columna] = 'X'; 
